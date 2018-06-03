@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,8 +39,9 @@ public class ProdutosController {
 
 	@RequestMapping("/form")
 	public ModelAndView form(Produto produto) {
-		ModelAndView modelAndView = new ModelAndView("produtos/form");
+		ModelAndView modelAndView = new ModelAndView("/produtos/form");
 		modelAndView.addObject("tipos", TipoPreco.values());
+		
 		return modelAndView;
 	}
 	
@@ -55,14 +57,25 @@ public class ProdutosController {
 		
 		produtoDAO.gravar(produto);
 		redirectAttributes.addFlashAttribute("sucesso","Produto adicionado com sucesso");
+		
 		return new ModelAndView("redirect:produtos");
 	}
 	
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView listar() {
 		List<Produto> produtos = produtoDAO.listar();
-		ModelAndView modelAndView = new ModelAndView("produtos/lista");
+		ModelAndView modelAndView = new ModelAndView("/produtos/lista");
 		modelAndView.addObject("produtos", produtos);
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping("/detalhe/{id}")
+	public ModelAndView detalhe(@PathVariable("id") Integer id) {
+		ModelAndView modelAndView = new ModelAndView("/produtos/detalhe");
+		Produto produto = produtoDAO.buscar(id);
+		modelAndView.addObject("produto", produto);
+		
 		return modelAndView;
 	}
 }
