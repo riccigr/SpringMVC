@@ -9,6 +9,7 @@
 </head>
 <body>
 	<p>${sucesso}</p>
+	<p>${falha}</p>
 	<h1>Lista de produtos cadastrados</h1>
 	<table>
 		<tr>
