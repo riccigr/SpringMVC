@@ -25,6 +25,7 @@ public class PagamentoController {
 	@Autowired
 	private RestTemplate restTemplate;
 	
+	@SuppressWarnings("finally")
 	@RequestMapping(value="/finalizar", method=RequestMethod.POST)
 	public Callable<ModelAndView> finalizar(RedirectAttributes attributes) {
 		
