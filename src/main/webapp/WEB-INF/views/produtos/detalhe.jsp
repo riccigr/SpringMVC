@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -39,7 +41,7 @@
 					<ul class="clearfix">
 						<li><a href="${s:mvcUrl('PC#listar').build() }" rel="nofollow">Lista de Produtos</a></li>
 						<li><a href="${s:mvcUrl('PC#form').build() }" rel="nofollow">Cadastro</a></li>
-						<li><a href="/carrinho" rel="nofollow">Carrinho (${carrinhoCompras.quantidade})</a></li>
+						<li><a href="${s:mvcUrl('CCC#itens').build() }" rel="nofollow">Carrinho (${carrinhoCompras.quantidade})</a></li>
 					</ul>
 				</nav>
 			</div>
@@ -72,7 +74,7 @@
 		</header>
 
 		<section class="buy-options clearfix">
-			<form action='<c:url value="/carrinho/add" />' method="post" class="container">
+			<form:form servletRelativeAction="/carrinho/add" method="post" cssClass="container">
 				<input type="hidden" value="${produto.id }" name="produtoId" >
 				<ul id="variants" class="clearfix">
 					<c:forEach items="${produto.precos }" var="preco">
@@ -85,7 +87,7 @@
 				   </c:forEach>	
 				</ul>
 				<button type="submit" class="submit-image icon-basket-alt" title="${produto.titulo }"></button>
-			</form>
+			</form:form>
 		</section>
 
 		<div class="container">
