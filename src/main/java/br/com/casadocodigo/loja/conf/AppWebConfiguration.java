@@ -19,10 +19,14 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
@@ -42,7 +46,6 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	/**
 	 * seta o principal internalViewResolver e define prefixo/sufixo dos jsp ...
 	 * retornados pelos controllers.
-	 * @return
 	 */
 	@Bean
 	public InternalResourceViewResolver internalResourceViewResolver() {
@@ -56,7 +59,6 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	/**
 	 * Seta caminho das mensagens de validacao;
 	 * message.properties
-	 * @return
 	 */
 	@Bean
 	public MessageSource messageSource() {
@@ -68,8 +70,7 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	}
 	
 	/**
-	 * formata das datas dos objetos no controller;
-	 * @return
+	 * formata as datas dos objetos no controller;
 	 */
 	@Bean
 	public FormattingConversionService mvcConversionService() {
@@ -82,7 +83,6 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	
 	/**
 	 * necessario para upload de arquivo = multipart
-	 * @return
 	 */
 	@Bean
 	public MultipartResolver multipartResolver() {
@@ -91,7 +91,6 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	
 	/**
 	 * necessario para consumo de api rest via post
-	 * @return
 	 */
 	@Bean
 	public RestTemplate restTemplate() {
@@ -112,8 +111,6 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	/**
 	 * resolve os formatos de requisicao
 	 * voce precisa criar o seu viewResolver. ex: jsonViewResolver
-	 * @param manager
-	 * @return
 	 */
 	@Bean
 	public ViewResolver contentNegotiationViewResolver(ContentNegotiationManager manager) {
@@ -128,12 +125,30 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 		return resolver;
 	}
 	
+	
 	/**
-	 * qual servlet que vai capturar requisicoes default. Mandando isso direto para o tomcat.
+	 * armazena um cookie com o locale solicitado.
+	 * 
+	 */
+	@Bean
+	public LocaleResolver localeResolver() {
+		return new CookieLocaleResolver();
+	}
+	
+	/**
+	 * servlet que vai capturar requisicoes default. Mandando isso direto para o tomcat.
 	 */
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
+	}
+	
+	/**
+	 * identifica mudanca no locate
+	 */
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(new LocaleChangeInterceptor());
 	}
 	
 	
