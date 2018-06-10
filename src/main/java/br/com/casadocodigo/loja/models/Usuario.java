@@ -29,6 +29,10 @@ public class Usuario implements UserDetails {
 	public String getEmail() {
 		return email;
 	}
+	
+	/**
+	 * gere com base em Bcrypt
+	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -50,6 +54,8 @@ public class Usuario implements UserDetails {
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
 	}
+	
+	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return this.roles;
