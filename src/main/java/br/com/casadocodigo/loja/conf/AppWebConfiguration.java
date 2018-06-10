@@ -2,6 +2,7 @@ package br.com.casadocodigo.loja.conf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.cache.CacheManager;
@@ -15,6 +16,8 @@ import org.springframework.format.datetime.DateFormatter;
 import org.springframework.format.datetime.DateFormatterRegistrar;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.format.support.FormattingConversionService;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartResolver;
@@ -50,9 +53,11 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	@Bean
 	public InternalResourceViewResolver internalResourceViewResolver() {
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+		
 		resolver.setPrefix("/WEB-INF/views/");
 		resolver.setSuffix(".jsp");
 		resolver.setExposedContextBeanNames("carrinhoCompras");
+		
 		return resolver;
 	}
 	
@@ -62,10 +67,13 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	 */
 	@Bean
 	public MessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		ReloadableResourceBundleMessageSource messageSource = 
+				new ReloadableResourceBundleMessageSource();
+		
 		messageSource.setBasename("/WEB-INF/messages");
 		messageSource.setDefaultEncoding("UTF-8");
 		messageSource.setCacheSeconds(1);
+		
 		return messageSource;
 	}
 	
@@ -74,10 +82,13 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 	 */
 	@Bean
 	public FormattingConversionService mvcConversionService() {
-		DefaultFormattingConversionService conversionService = new DefaultFormattingConversionService();
+		DefaultFormattingConversionService conversionService = 
+				new DefaultFormattingConversionService();
 		DateFormatterRegistrar registrar = new DateFormatterRegistrar();
+		
 		registrar.setFormatter(new DateFormatter("dd/MM/yyyy"));
 		registrar.registerFormatters(conversionService);
+		
 		return conversionService;
 	}
 	
@@ -103,14 +114,17 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 				.newBuilder()
 				.maximumSize(100)
 				.expireAfterAccess(5, TimeUnit.MINUTES);
+		
 		GuavaCacheManager manager = new GuavaCacheManager();
 		manager.setCacheBuilder(builder);
+		
 		return manager;
 	}
 	
 	/**
 	 * resolve os formatos de requisicao
-	 * voce precisa criar o seu viewResolver. ex: jsonViewResolver
+	 * voce precisa criar o seu viewResolver. 
+	 * ex: jsonViewResolver
 	 */
 	@Bean
 	public ViewResolver contentNegotiationViewResolver(ContentNegotiationManager manager) {
@@ -135,8 +149,29 @@ public class AppWebConfiguration extends WebMvcConfigurerAdapter{
 		return new CookieLocaleResolver();
 	}
 	
+	//TODO: armazenar dados sensiveis em properties.
+	@Bean
+	public MailSender mailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+		
+		mailSender.setHost("smtp.gmail.com");
+		mailSender.setUsername("teste@gmail.com");
+		mailSender.setPassword("teste123");
+		mailSender.setPort(587);
+		
+		Properties properties = new Properties();
+		
+		properties.put("mail.smtp.auth", true);
+		properties.put("mail.smtp.starttls.enable", true);
+		
+		mailSender.setJavaMailProperties(properties);
+		
+		return mailSender;
+	}
+	
 	/**
-	 * servlet que vai capturar requisicoes default. Mandando isso direto para o tomcat.
+	 * servlet que vai capturar requisicoes default. 
+	 * Mandando isso direto para o tomcat.
 	 */
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
